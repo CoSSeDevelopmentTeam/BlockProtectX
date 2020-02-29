@@ -16,7 +16,7 @@ data class BlockLog(
 ) {
     companion object {
         const val ID_NOTFOUND = -1
-        fun emptyLog(): BlockLog = BlockLog(ID_NOTFOUND, "", "", "", 0, 0, 0, "", 0, 0, 0, ActionType.TYPE_UNKNOWN)
+        fun emptyLog(): BlockLog = BlockLog(ID_NOTFOUND, "Unknown", "0.0.0.0", "0000-0000-0000-0000", 0, 0, 0, "Unknown", 0, 0, 0, ActionType.TYPE_UNKNOWN)
     }
 
     enum class ActionType(val id: Int, val text: String) {
