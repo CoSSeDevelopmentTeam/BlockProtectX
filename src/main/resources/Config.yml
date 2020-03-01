@@ -1,1 +1,2 @@
 LoginDaysCount: 3
+exceptLevels: ["world", "level"]

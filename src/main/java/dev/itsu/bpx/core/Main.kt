@@ -5,6 +5,7 @@ import cn.nukkit.utils.Config
 import cn.nukkit.utils.Utils
 import dev.itsu.bpx.command.CoCommand
 import java.io.File
+import javax.xml.crypto.Data
 
 class Main : PluginBase() {
 
@@ -16,18 +17,20 @@ class Main : PluginBase() {
     }
 
     private fun loadConfig() {
-        val file = File("./plugins/BlockProtectX/Config.yml")
-        val parent = File("./plugins/BlockProtectX/")
-        val config = Config(file, Config.YAML)
-
-        if (!parent.exists()) parent.mkdir()
-
-        if (!file.exists()) {
-            Utils.writeFile(file, javaClass.classLoader.getResourceAsStream("Config.yml"))
+        val file = File("./plugins/BlockProtectX/Config.yml").also {
+            if (!it.exists()) Utils.writeFile(it, javaClass.classLoader.getResourceAsStream("Config.yml"))
         }
 
+        File("./plugins/BlockProtectX/").also {
+            if (it.exists()) it.mkdir()
+        }
+
+        val config = Config(file, Config.YAML)
         config.load(file.absolutePath)
 
         DataManager.daysCount = config.getInt("LoginDaysCount")
+        ((config.getList("exceptLevels") ?: return) as List<String>).forEach {
+            DataManager.exceptLevels.add(it)
+        }
     }
 }
