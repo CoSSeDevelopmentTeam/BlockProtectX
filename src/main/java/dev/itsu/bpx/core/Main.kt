@@ -29,7 +29,7 @@ class Main : PluginBase() {
         config.load(file.absolutePath)
 
         DataManager.daysCount = config.getInt("LoginDaysCount")
-        ((config.getList("exceptLevels") ?: return) as List<String>).forEach {
+        ((config.getList("ExceptLevels") ?: return) as List<String>).forEach {
             DataManager.exceptLevels.add(it)
         }
     }
