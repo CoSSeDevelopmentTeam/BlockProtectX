@@ -24,6 +24,8 @@ class EventListener : Listener {
         if (DataManager.coQueue[event.player.name] != true) {
             BlockProtectXAPI.createLog(event.player, event.block, event.block, BlockLog.ActionType.TYPE_TAP)
             return
+        } else {
+            event.setCancelled()
         }
 
         val blockLog = BlockProtectXAPI.getLog(event.block)
@@ -51,6 +53,7 @@ class EventListener : Listener {
     fun onBreak(event: BlockBreakEvent) {
         BlockProtectXAPI.createLog(event.player, event.block, event.block, BlockLog.ActionType.TYPE_BREAK)
         if (event.player.isOp || DataManager.exceptLevels.contains(event.block.level.name)) return
+        if (event.player.isOp || !DataManager.protectedLevels.contains(event.block.level.name)) return
 
         val data = BlockProtectXAPI.getPlayerData(event.player)
         if (data.type == PlayerData.EditType.TYPE_UNEDITABLE) {

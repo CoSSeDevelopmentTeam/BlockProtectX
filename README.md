@@ -15,6 +15,9 @@ LoginDaysCount: 3
 
 # Worlds list that players can break blocks despite their login days count.
 ExceptLevels: ["world", "myWorld"]
+
+# Worlds list that players cannot break blocks despite their login days.
+ProtectedLevels: ["world1", "world2"]
 ```  
 3. Rerun your server.  
   

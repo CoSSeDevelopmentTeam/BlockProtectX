@@ -1,5 +1,6 @@
 package dev.itsu.bpx.core
 
+import cn.nukkit.plugin.LibraryLoader
 import cn.nukkit.plugin.PluginBase
 import cn.nukkit.utils.Config
 import cn.nukkit.utils.Utils
@@ -31,6 +32,9 @@ class Main : PluginBase() {
         DataManager.daysCount = config.getInt("LoginDaysCount")
         ((config.getList("ExceptLevels") ?: return) as List<String>).forEach {
             DataManager.exceptLevels.add(it)
+        }
+        ((config.getList("ProtectedLevels") ?: return) as List<String>).forEach {
+            DataManager.protectedLevels.add(it)
         }
     }
 }

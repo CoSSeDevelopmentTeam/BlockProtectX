@@ -1,2 +1,3 @@
 LoginDaysCount: 3
-ExceptLevels: ["world", "level"]
+ExceptLevels: ["world1"]
+ProtectedLevels: ["world", "level"]
