@@ -21,7 +21,7 @@ class Main : PluginBase() {
         File("./plugins/BlockProtectX/").also {
             if (it.exists()) it.mkdir()
         }
-        
+
         val file = File("./plugins/BlockProtectX/Config.yml").also {
             if (!it.exists()) Utils.writeFile(it, javaClass.classLoader.getResourceAsStream("Config.yml"))
         }
