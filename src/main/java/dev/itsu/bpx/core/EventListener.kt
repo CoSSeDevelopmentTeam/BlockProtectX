@@ -30,11 +30,12 @@ class EventListener : Listener {
         val blockLog = BlockProtectXAPI.getLog(event.block)
 
         if (blockLog.id == BlockLog.ID_NOTFOUND) {
-            event.player.sendMessage("システム>>ログはありません。")
+            event.player.sendMessage("§aシステム§r>>ログはありません。")
             return
         }
 
         event.player.sendMessage("""
+            ${TextFormat.RESET}------------------------------
             ${TextFormat.DARK_AQUA}BlockProtectX
             ${TextFormat.RESET}------------------------------
             §aユーザー §r${blockLog.owner}
@@ -52,11 +53,14 @@ class EventListener : Listener {
     fun onBreak(event: BlockBreakEvent) {
         BlockProtectXAPI.createLog(event.player, event.block, event.block, BlockLog.ActionType.TYPE_BREAK)
         if (event.player.isOp || DataManager.exceptLevels.contains(event.block.level.name)) return
-        if (event.player.isOp || !DataManager.protectedLevels.contains(event.block.level.name)) return
+        if (!event.player.isOp && DataManager.protectedLevels.contains(event.block.level.name)) {
+            event.setCancelled()
+            return
+        }
 
         val data = BlockProtectXAPI.getPlayerData(event.player)
         if (data.type == PlayerData.EditType.TYPE_UNEDITABLE) {
-            event.player.sendMessage("システム>>このブロックは破壊できません。")
+            event.player.sendMessage("§aシステム§r>>このブロックは破壊できません。")
             event.setCancelled()
         }
     }
@@ -75,7 +79,7 @@ class EventListener : Listener {
             data.loginCount++
             if (data.loginCount >= DataManager.daysCount) {
                 data.type = PlayerData.EditType.TYPE_EDITABLE
-                event.player.sendMessage("システム>>ログイン日数が既定の日数を超えたため、§aブロックを破壊可能§rになりました！")
+                event.player.sendMessage("§aシステム§r>>ログイン日数が既定の日数を超えたため、§aブロックを破壊可能§rになりました！")
             }
             BlockProtectXAPI.setPlayerData(data)
         }
