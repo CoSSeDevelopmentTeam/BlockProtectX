@@ -59,7 +59,7 @@ class EventListener : Listener {
         }
 
         val data = BlockProtectXAPI.getPlayerData(event.player)
-        if (data.type == PlayerData.EditType.TYPE_UNEDITABLE) {
+        if (data.id != PlayerData.ID_NOTFOUND && data.name != event.player.name && data.type == PlayerData.EditType.TYPE_UNEDITABLE) {
             event.player.sendMessage("§aシステム§r>>このブロックは破壊できません。")
             event.setCancelled()
         }
