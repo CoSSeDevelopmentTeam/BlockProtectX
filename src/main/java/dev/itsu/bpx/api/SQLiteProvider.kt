@@ -20,8 +20,6 @@ object SQLiteProvider {
 
     fun createLog(player: Player, position: Position, block: Block, type: BlockLog.ActionType) {
         try {
-            if (existsLog(position)) deleteLog(position)
-
             val sql = "INSERT INTO block_log (owner, ip, cid, time, b_id, b_damage, level, x, y, z, type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
             val statement = connection.prepareStatement(sql)
             statement.queryTimeout = 50
@@ -46,7 +44,7 @@ object SQLiteProvider {
         }
     }
 
-    fun deleteLog(position: Position) {
+    fun deleteLogs(position: Position) {
         if (!existsLog(position)) return
         //if (getLog(position).owner != player.name) return
 
@@ -67,8 +65,10 @@ object SQLiteProvider {
         }
     }
 
-    fun getLog(position: Position): BlockLog {
-        if (!existsLog(position)) return BlockLog.emptyLog()
+    fun getLog(position: Position): List<BlockLog> {
+        val logs = mutableListOf<BlockLog>()
+
+        if (!existsLog(position)) return logs
 
         try {
             val sql = "SELECT * FROM block_log WHERE x = ? AND y = ? AND z = ? AND level = ?"
@@ -82,8 +82,8 @@ object SQLiteProvider {
 
             val result = statement.executeQuery()
 
-            if (result.next()) {
-                return BlockLog(
+            while (result.next()) {
+                logs.add(BlockLog(
                         result.getInt("id"),
                         result.getString("owner"),
                         result.getString("ip"),
@@ -96,11 +96,7 @@ object SQLiteProvider {
                         result.getInt("y"),
                         result.getInt("z"),
                         BlockLog.ActionType.fromId(result.getInt("type"))
-
-                ).also {
-                    result.close()
-                    statement.close()
-                }
+                ))
             }
 
             result.close()
@@ -110,7 +106,7 @@ object SQLiteProvider {
             e.printStackTrace()
         }
 
-        return BlockLog.emptyLog()
+        return logs
     }
 
     fun existsLog(position: Position): Boolean {

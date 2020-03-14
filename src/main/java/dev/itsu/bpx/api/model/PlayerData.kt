@@ -14,6 +14,8 @@ data class PlayerData(
         fun emptyData(): PlayerData = PlayerData(ID_NOTFOUND, "Unknown", 0, 0, 0, EditType.TYPE_UNEDITABLE)
     }
 
+
+
     enum class EditType(val id: Int) {
         TYPE_EDITABLE(0),
         TYPE_UNEDITABLE(1);
@@ -24,5 +26,9 @@ data class PlayerData(
                 else -> TYPE_UNEDITABLE
             }
         }
+    }
+
+    override fun toString(): String {
+        return "PlayerData(id=$id, name='$name', firstPlayed=$firstPlayed, lastPlayed=$lastPlayed, loginCount=$loginCount, type=$type)"
     }
 }

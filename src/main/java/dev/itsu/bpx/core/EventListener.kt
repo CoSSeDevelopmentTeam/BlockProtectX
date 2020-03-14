@@ -27,9 +27,9 @@ class EventListener : Listener {
             event.setCancelled()
         }
 
-        val blockLog = BlockProtectXAPI.getLog(event.block)
+        val blockLog = BlockProtectXAPI.getLogs(event.block)
 
-        if (blockLog.id == BlockLog.ID_NOTFOUND) {
+        if (blockLog.isEmpty()) {
             event.player.sendMessage("§aシステム§r>>ログはありません。")
             return
         }
@@ -38,31 +38,54 @@ class EventListener : Listener {
             ${TextFormat.RESET}------------------------------
             ${TextFormat.DARK_AQUA}BlockProtectX
             ${TextFormat.RESET}------------------------------
-            §aユーザー §r${blockLog.owner}
-            §aIP §r${blockLog.ip}
-            §aDeviceID §r${blockLog.clientId}
-            §a時間 §r${SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(blockLog.time)}
-            §aブロック §r${blockLog.id}:${blockLog.blockDamage}
-            §aワールド名 §r${blockLog.levelName}
-            §a座標 §r(${blockLog.x}, ${blockLog.y}, ${blockLog.z})
-            §aアクション §r${blockLog.type.text}
         """.trimIndent())
+
+        blockLog.forEach {
+            event.player.sendMessage("""
+            §aユーザー §r${it.owner}
+            §aIP §r${it.ip}
+            §aDeviceID §r${it.clientId}
+            §a時間 §r${SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(it.time)}
+            §aブロック (id:damage) §r${it.id}:${it.blockDamage}
+            §aワールド名 §r${it.levelName}
+            §a座標 §r(${it.x}, ${it.y}, ${it.z})
+            §aアクション §r${it.type.text}
+            ${TextFormat.RESET}------------------------------
+            """.trimIndent())
+        }
     }
 
     @EventHandler
     fun onBreak(event: BlockBreakEvent) {
-        BlockProtectXAPI.createLog(event.player, event.block, event.block, BlockLog.ActionType.TYPE_BREAK)
-        if (event.player.isOp || DataManager.exceptLevels.contains(event.block.level.name)) return
-        if (!event.player.isOp && DataManager.protectedLevels.contains(event.block.level.name)) {
+        if (event.player.isOp || DataManager.exceptLevels.contains(event.block.level.name)) {
+            BlockProtectXAPI.createLog(event.player, event.block, event.block, BlockLog.ActionType.TYPE_BREAK)
+            return
+        }
+
+        if (DataManager.protectedLevels.contains(event.block.level.name)) {
+            BlockProtectXAPI.createLog(event.player, event.block, event.block, BlockLog.ActionType.TYPE_BREAK)
             event.setCancelled()
             return
         }
 
-        val data = BlockProtectXAPI.getPlayerData(event.player)
-        if (data.id != PlayerData.ID_NOTFOUND && data.name != event.player.name && data.type == PlayerData.EditType.TYPE_UNEDITABLE) {
+        val data = BlockProtectXAPI.getLogs(event.block)
+        if (!BlockProtectXAPI.contains(data, BlockLog.ActionType.TYPE_PLACE)) {
+            BlockProtectXAPI.createLog(event.player, event.block, event.block, BlockLog.ActionType.TYPE_BREAK)
+            return
+        }
+
+        val player = BlockProtectXAPI.getPlayerData(event.player)
+        var placedByMe = false
+        data.forEach {
+            if (it.type == BlockLog.ActionType.TYPE_PLACE && it.owner == event.player.name) placedByMe = true
+        }
+
+        if (!placedByMe && player.type == PlayerData.EditType.TYPE_UNEDITABLE) {
             event.player.sendMessage("§aシステム§r>>このブロックは破壊できません。")
             event.setCancelled()
         }
+
+        BlockProtectXAPI.createLog(event.player, event.block, event.block, BlockLog.ActionType.TYPE_BREAK)
     }
 
     @EventHandler

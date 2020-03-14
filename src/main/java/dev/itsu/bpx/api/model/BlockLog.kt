@@ -19,6 +19,8 @@ data class BlockLog(
         fun emptyLog(): BlockLog = BlockLog(ID_NOTFOUND, "Unknown", "0.0.0.0", "0000-0000-0000-0000", 0, 0, 0, "Unknown", 0, 0, 0, ActionType.TYPE_UNKNOWN)
     }
 
+
+
     enum class ActionType(val id: Int, val text: String) {
         TYPE_PLACE(0, "設置"),
         TYPE_TAP(1, "タップ"),
@@ -33,5 +35,9 @@ data class BlockLog(
                 else -> TYPE_UNKNOWN
             }
         }
+    }
+
+    override fun toString(): String {
+        return "BlockLog(id=$id, owner='$owner', ip='$ip', clientId='$clientId', time=$time, blockId=$blockId, blockDamage=$blockDamage, levelName='$levelName', x=$x, y=$y, z=$z, type=$type)"
     }
 }
