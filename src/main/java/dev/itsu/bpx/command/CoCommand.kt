@@ -1,8 +1,10 @@
 package dev.itsu.bpx.command
 
+import cn.nukkit.Player
 import cn.nukkit.command.Command
 import cn.nukkit.command.CommandSender
 import cn.nukkit.command.ConsoleCommandSender
+import dev.itsu.bpx.api.BlockProtectXAPI
 import dev.itsu.bpx.core.DataManager
 
 class CoCommand : Command("co", "ブロックログコマンド。/coを実行後、対象のブロックをタップ", "/co") {
@@ -13,8 +15,9 @@ class CoCommand : Command("co", "ブロックログコマンド。/coを実行�
             return false
         }
 
-        if (!sender.isOp) {
-            sender.sendMessage("§aシステム§r>>このコマンドの実行にはオペレータ権限が必要です。")
+        val data = BlockProtectXAPI.getPlayerData(sender as Player)
+        if (!sender.isOp && data.loginCount < DataManager.daysCount) {
+            sender.sendMessage("§aシステム§r>>このコマンドの実行にはブロックの編集権限が必要です。")
             return false
         }
 
