@@ -12,11 +12,12 @@ data class BlockLog(
         val x: Int,
         val y: Int,
         val z: Int,
-        val type: ActionType
+        val type: ActionType,
+        var status: BlockStatus
 ) {
     companion object {
         const val ID_NOTFOUND = -1
-        fun emptyLog(): BlockLog = BlockLog(ID_NOTFOUND, "Unknown", "0.0.0.0", "0000-0000-0000-0000", 0, 0, 0, "Unknown", 0, 0, 0, ActionType.TYPE_UNKNOWN)
+        fun emptyLog(): BlockLog = BlockLog(ID_NOTFOUND, "UNKNOWN", "0.0.0.0", "0000-0000-0000-0000", 0, 0, 0, "UNKNOWN", 0, 0, 0, ActionType.TYPE_UNKNOWN, BlockStatus.STATUS_UNKNOWN)
     }
 
 
@@ -33,6 +34,20 @@ data class BlockLog(
                 1 -> TYPE_TAP
                 2 -> TYPE_BREAK
                 else -> TYPE_UNKNOWN
+            }
+        }
+    }
+
+    enum class BlockStatus(val id: Int, val text: String) {
+        STATUS_LATEST(0, "§b最新のブロック"),
+        STATUS_PAST(1, "§e過去のブロック"),
+        STATUS_UNKNOWN(2, "§d不明");
+
+        companion object {
+            fun fromId(id: Int): BlockStatus = when(id) {
+                0 -> STATUS_LATEST
+                1 -> STATUS_PAST
+                else -> STATUS_UNKNOWN
             }
         }
     }

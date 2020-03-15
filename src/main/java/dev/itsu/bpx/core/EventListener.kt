@@ -42,6 +42,7 @@ class EventListener : Listener {
 
         blockLog.forEach {
             event.player.sendMessage("""
+            §aステータス ${it.status.text}
             §aユーザー §r${it.owner}
             §aIP §r${it.ip}
             §aDeviceID §r${it.clientId}

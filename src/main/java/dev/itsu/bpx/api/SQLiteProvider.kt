@@ -20,7 +20,7 @@ object SQLiteProvider {
 
     fun createLog(player: Player, position: Position, block: Block, type: BlockLog.ActionType) {
         try {
-            val sql = "INSERT INTO block_log (owner, ip, cid, time, b_id, b_damage, level, x, y, z, type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            val sql = "INSERT INTO block_log (owner, ip, cid, time, b_id, b_damage, level, x, y, z, type, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
             val statement = connection.prepareStatement(sql)
             statement.queryTimeout = 50
 
@@ -35,6 +35,7 @@ object SQLiteProvider {
             statement.setInt(9, position.floorY)
             statement.setInt(10, position.floorZ)
             statement.setInt(11, type.id)
+            statement.setInt(12, BlockLog.BlockStatus.STATUS_LATEST.id)
 
             statement.executeUpdate()
             statement.close()
@@ -95,7 +96,8 @@ object SQLiteProvider {
                         result.getInt("x"),
                         result.getInt("y"),
                         result.getInt("z"),
-                        BlockLog.ActionType.fromId(result.getInt("type"))
+                        BlockLog.ActionType.fromId(result.getInt("type")),
+                        BlockLog.BlockStatus.fromId(result.getInt("status"))
                 ))
             }
 
@@ -110,15 +112,19 @@ object SQLiteProvider {
     }
 
     fun existsLog(position: Position): Boolean {
+        return existsLog(position.floorX, position.floorY, position.floorZ, position.level.name)
+    }
+
+    fun existsLog(x: Int, y: Int, z: Int, levelName: String): Boolean {
         try {
             val sql = "SELECT * FROM block_log WHERE x = ? AND y = ? AND z = ? AND level = ?"
             val statement = connection.prepareStatement(sql)
             statement.queryTimeout = 50
 
-            statement.setInt(1, position.floorX)
-            statement.setInt(2, position.floorY)
-            statement.setInt(3, position.floorZ)
-            statement.setString(4, position.level.name)
+            statement.setInt(1, x)
+            statement.setInt(2, y)
+            statement.setInt(3, z)
+            statement.setString(4, levelName)
 
             return statement.executeQuery().next().also {
                 statement.close()
@@ -129,6 +135,25 @@ object SQLiteProvider {
         }
 
         return true
+    }
+
+    fun updateBlockLog(blockLog: BlockLog) {
+        if (!existsLog(blockLog.x, blockLog.y, blockLog.z, blockLog.levelName)) return
+
+        try {
+            val sql = "UPDATE block_log SET status = ? WHERE id = ?"
+            val statement = connection.prepareStatement(sql)
+            statement.queryTimeout = 50
+
+            statement.setInt(1, blockLog.status.id)
+            statement.setInt(2, blockLog.id)
+
+            statement.executeUpdate()
+            statement.close()
+
+        } catch (e: SQLException) {
+            e.printStackTrace()
+        }
     }
 
     fun createPlayerData(player: Player) {
@@ -243,7 +268,8 @@ object SQLiteProvider {
                     "x INTEGER NOT NULL," +
                     "y INTEGER NOT NULL," +
                     "z INTEGER NOT NULL," +
-                    "type INTEGER NOT NULL" +
+                    "type INTEGER NOT NULL," +
+                    "status INTEGER NOT NULL" +
                     ")"
             )
 

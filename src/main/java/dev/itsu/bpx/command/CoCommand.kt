@@ -4,11 +4,16 @@ import cn.nukkit.Player
 import cn.nukkit.command.Command
 import cn.nukkit.command.CommandSender
 import cn.nukkit.command.ConsoleCommandSender
+import cn.nukkit.command.simple.CommandPermission
 import dev.itsu.bpx.api.BlockProtectXAPI
 import dev.itsu.bpx.api.model.PlayerData
 import dev.itsu.bpx.core.DataManager
 
 class CoCommand : Command("co", "ブロックログコマンド。/coを実行後、対象のブロックをタップ", "/co") {
+
+    init {
+        this.permission = "everyone"
+    }
 
     override fun execute(sender: CommandSender, s: String, args: Array<String>): Boolean {
         if (sender is ConsoleCommandSender) {
@@ -17,7 +22,7 @@ class CoCommand : Command("co", "ブロックログコマンド。/coを実行�
         }
 
         val data = BlockProtectXAPI.getPlayerData(sender as Player)
-        if (!sender.isOp && data.type == PlayerData.EditType.TYPE_EDITABLE) {
+        if (!sender.isOp && data.type == PlayerData.EditType.TYPE_UNEDITABLE) {
             sender.sendMessage("§aシステム§r>>このコマンドの実行にはブロックの編集権限が必要です。")
             return false
         }
