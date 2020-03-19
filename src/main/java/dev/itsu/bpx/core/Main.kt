@@ -51,19 +51,3 @@ class Main : PluginBase() {
         }
     }
 }
-
-fun main() {
-    val lastModified = 11
-    val today12 = 2
-    if (lastModified < today12) {
-        // increment days
-    }
-    val today = Calendar.getInstance().let {
-        val c = Calendar.getInstance()
-        it.clear()
-        it.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH))
-        it.timeInMillis
-    }
-    val judge = 1584543686480
-    println("$today:${System.currentTimeMillis()}")
-}

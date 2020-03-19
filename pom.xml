@@ -6,7 +6,7 @@
 
     <groupId>dev.itsu</groupId>
     <artifactId>BlockProtectX</artifactId>
-    <version>1.7-SNAPSHOT</version>
+    <version>1.8-SNAPSHOT</version>
 
     <properties>
         <kotlin.version>1.3.61</kotlin.version>

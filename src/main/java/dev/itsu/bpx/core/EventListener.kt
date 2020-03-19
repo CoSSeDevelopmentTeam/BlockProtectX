@@ -107,12 +107,12 @@ class EventListener : Listener {
             it.timeInMillis
         }
 
-        if (System.currentTimeMillis() - data.lastModified > TimeUnit.DAYS.toMillis(1)) {
+        if (data.lastModified < today) {
             data.loginCount++
             data.lastModified = System.currentTimeMillis()
             if (data.loginCount >= DataManager.daysCount) {
                 data.type = PlayerData.EditType.TYPE_EDITABLE
-                event.player.sendMessage("§aシステム§r>>ログイン日数が既定の日数を超えたため、§aブロックを破壊可能§rになりました！")
+                event.player.sendMessage("§aシステム§r>>通算ログイン日数が既定の日数を超えたため、§aブロックを破壊可能§rになりました！")
             }
             BlockProtectXAPI.setPlayerData(data)
         }
