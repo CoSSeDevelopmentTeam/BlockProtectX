@@ -4,7 +4,7 @@ data class PlayerData(
         val id: Int,
         val name: String,
         var firstPlayed: Long,
-        var lastPlayed: Long,
+        var lastModified: Long,
         var loginCount: Int,
         var type: EditType
 ) {
@@ -29,6 +29,6 @@ data class PlayerData(
     }
 
     override fun toString(): String {
-        return "PlayerData(id=$id, name='$name', firstPlayed=$firstPlayed, lastPlayed=$lastPlayed, loginCount=$loginCount, type=$type)"
+        return "PlayerData(id=$id, name='$name', firstPlayed=$firstPlayed, lastPlayed=$lastModified, loginCount=$loginCount, type=$type)"
     }
 }

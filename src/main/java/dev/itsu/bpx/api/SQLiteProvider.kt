@@ -3,8 +3,8 @@ package dev.itsu.bpx.api
 import dev.itsu.bpx.api.model.BlockLog
 import cn.nukkit.Player
 import cn.nukkit.block.Block
-import cn.nukkit.level.Location
 import cn.nukkit.level.Position
+import dev.itsu.bpx.api.model.LevelData
 import dev.itsu.bpx.api.model.PlayerData
 import java.sql.Connection
 import java.sql.DriverManager
@@ -58,6 +58,21 @@ object SQLiteProvider {
             statement.setInt(2, position.floorY)
             statement.setInt(3, position.floorZ)
             statement.setString(4, position.level.name)
+
+            statement.executeUpdate()
+            statement.close()
+        } catch (e: SQLException) {
+            e.printStackTrace()
+        }
+    }
+
+    fun deleteLogsByLevelName(levelName: String) {
+        try {
+            val sql = "DELETE FROM block_log WHERE level = ?"
+            val statement = connection.prepareStatement(sql)
+            statement.queryTimeout = 50
+
+            statement.setString(1, levelName)
 
             statement.executeUpdate()
             statement.close()
@@ -216,7 +231,7 @@ object SQLiteProvider {
             val statement = connection.prepareStatement(sql)
             statement.queryTimeout = 50
 
-            statement.setLong(1, playerData.lastPlayed)
+            statement.setLong(1, playerData.lastModified)
             statement.setInt(2, playerData.loginCount)
             statement.setInt(3, playerData.type.id)
             statement.setString(4, player.name)
@@ -246,6 +261,65 @@ object SQLiteProvider {
         }
 
         return true
+    }
+
+    fun createLevelData(levelName: String) {
+        if (existsLevel(levelName)) return
+
+        try {
+            val sql = "INSERT INTO mcbe_level (name) VALUES (?)"
+            val statement = connection.prepareStatement(sql)
+            statement.queryTimeout = 50
+
+            statement.setString(1, levelName)
+
+            statement.executeUpdate()
+            statement.close()
+
+        } catch (e: SQLException) {
+            e.printStackTrace()
+        }
+    }
+
+    fun existsLevel(levelName: String): Boolean {
+        try {
+            val sql = "SELECT * FROM mcbe_level WHERE name = ?"
+            val statement = connection.prepareStatement(sql)
+            statement.queryTimeout = 50
+
+            statement.setString(1, levelName)
+
+            return statement.executeQuery().next().also {
+                statement.close()
+            }
+
+        } catch (e: SQLException) {
+            e.printStackTrace()
+        }
+
+        return true
+    }
+
+    fun getLevels(): List<LevelData> {
+        val levels = mutableListOf<LevelData>()
+        try {
+            val sql = "SELECT * FROM mcbe_level"
+            val statement = connection.prepareStatement(sql)
+            statement.queryTimeout = 50
+
+            val result = statement.executeQuery()
+            while (result.next()) {
+                levels.add(LevelData(
+                        result.getInt("id"),
+                        result.getString("name")
+                ))
+            }
+
+        } catch (e: SQLException) {
+            e.printStackTrace()
+        }
+
+        return levels
     }
 
     private fun connectSQL() {
@@ -280,6 +354,12 @@ object SQLiteProvider {
                     "last_played LONG NOT NULL," +
                     "login_count INT NOT NULL," +
                     "type INT NOT NULL" +
+                    ")"
+            )
+
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS mcbe_level (" +
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                        "name TEXT NOT NULL" +
                     ")"
             )
 

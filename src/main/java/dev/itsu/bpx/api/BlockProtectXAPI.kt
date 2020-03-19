@@ -25,6 +25,8 @@ object BlockProtectXAPI {
 
     fun deleteLogsByPosition(position: Position) = SQLiteProvider.deleteLogs(position)
 
+    fun deleteLogsByLevelName(levelName: String) = SQLiteProvider.deleteLogsByLevelName(levelName)
+
     fun getLogs(x: Int, y: Int, z: Int, levelName: String): List<BlockLog> {
         return getLogs(Position(x.toDouble(), y.toDouble(), z.toDouble(), Server.getInstance().getLevelByName(levelName) ?: return listOf()))
     }
@@ -51,5 +53,12 @@ object BlockProtectXAPI {
     fun setPlayerData(playerData: PlayerData) {
         SQLiteProvider.setPlayerData(Server.getInstance().getPlayer(playerData.name) ?: return, playerData)
     }
+
+    /* Level Data */
+    fun createLevelData(levelName: String) = SQLiteProvider.createLevelData(levelName)
+
+    fun existsLevel(levelName: String) = SQLiteProvider.existsLevel(levelName)
+
+    fun getLevels() = SQLiteProvider.getLevels()
 
 }

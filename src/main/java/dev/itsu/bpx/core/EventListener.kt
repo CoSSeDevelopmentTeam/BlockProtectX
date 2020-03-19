@@ -12,6 +12,7 @@ import cn.nukkit.event.player.PlayerQuitEvent
 import cn.nukkit.utils.TextFormat
 import dev.itsu.bpx.api.model.PlayerData
 import java.text.SimpleDateFormat
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 class EventListener : Listener {
@@ -99,8 +100,16 @@ class EventListener : Listener {
         BlockProtectXAPI.createPlayerData(event.player)
 
         val data = BlockProtectXAPI.getPlayerData(event.player)
-        if (System.currentTimeMillis() - data.lastPlayed > TimeUnit.DAYS.toMillis(1)) {
+        val today = Calendar.getInstance().let {
+            val c = Calendar.getInstance()
+            it.clear()
+            it.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH))
+            it.timeInMillis
+        }
+
+        if (System.currentTimeMillis() - data.lastModified > TimeUnit.DAYS.toMillis(1)) {
             data.loginCount++
+            data.lastModified = System.currentTimeMillis()
             if (data.loginCount >= DataManager.daysCount) {
                 data.type = PlayerData.EditType.TYPE_EDITABLE
                 event.player.sendMessage("§aシステム§r>>ログイン日数が既定の日数を超えたため、§aブロックを破壊可能§rになりました！")
@@ -112,7 +121,7 @@ class EventListener : Listener {
     @EventHandler
     fun onLeave(event: PlayerQuitEvent) {
         val data = BlockProtectXAPI.getPlayerData(event.player)
-        data.lastPlayed = System.currentTimeMillis()
+        data.lastModified = System.currentTimeMillis()
         BlockProtectXAPI.setPlayerData(data)
     }
 
