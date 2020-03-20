@@ -33,7 +33,7 @@ object BlockProtectXAPI {
 
     fun getLogs(position: Position): List<BlockLog> {
         val result = SQLiteProvider.getLog(position)
-        return result.sortedWith(Comparator { t, t2 -> if (t2.time - t.time > 0) 1 else 0 })
+        return result.sortedWith(Comparator { t, t2 -> if (t2.time - t.time > 0) 0 else 1 })
     }
 
     fun updateLog(blockLog: BlockLog) = SQLiteProvider.updateBlockLog(blockLog)

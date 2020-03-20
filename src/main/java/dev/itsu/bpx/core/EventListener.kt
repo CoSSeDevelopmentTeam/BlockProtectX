@@ -11,6 +11,7 @@ import cn.nukkit.event.player.PlayerJoinEvent
 import cn.nukkit.event.player.PlayerQuitEvent
 import cn.nukkit.utils.TextFormat
 import dev.itsu.bpx.api.model.PlayerData
+import dev.itsu.bpx.command.CoCommand
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -21,40 +22,14 @@ class EventListener : Listener {
     fun onTap(event: PlayerInteractEvent) {
         if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) return
 
-        if (DataManager.coQueue[event.player.name] != true) {
+        if (!DataManager.coQueue.containsKey(event.player.name)) {
             BlockProtectXAPI.createLog(event.player, event.block, event.block, BlockLog.ActionType.TYPE_TAP)
             return
         } else {
             event.setCancelled()
         }
 
-        val blockLog = BlockProtectXAPI.getLogs(event.block)
-
-        if (blockLog.isEmpty()) {
-            event.player.sendMessage("§aシステム§r>>ログはありません。")
-            return
-        }
-
-        event.player.sendMessage("""
-            ${TextFormat.RESET}------------------------------
-            ${TextFormat.DARK_AQUA}BlockProtectX
-            ${TextFormat.RESET}------------------------------
-        """.trimIndent())
-
-        blockLog.forEach {
-            event.player.sendMessage("""
-            §aステータス ${it.status.text}
-            §aユーザー §r${it.owner}
-            §aIP §r${it.ip}
-            §aDeviceID §r${it.clientId}
-            §a時間 §r${SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(it.time)}
-            §aブロック (id:damage) §r${it.id}:${it.blockDamage}
-            §aワールド名 §r${it.levelName}
-            §a座標 §r(${it.x}, ${it.y}, ${it.z})
-            §aアクション §r${it.type.text}
-            ${TextFormat.RESET}------------------------------
-            """.trimIndent())
-        }
+        CoCommand.process(event)
     }
 
     @EventHandler
