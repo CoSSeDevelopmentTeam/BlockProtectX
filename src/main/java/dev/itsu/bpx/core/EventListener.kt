@@ -67,6 +67,7 @@ class EventListener : Listener {
 
     @EventHandler
     fun onPlace(event: BlockPlaceEvent) {
+        if (event.player.isOp || DataManager.protectedLevels.contains(event.block.level.name)) event.setCancelled()
         BlockProtectXAPI.createLog(event.player, event.block, event.block, BlockLog.ActionType.TYPE_PLACE)
     }
 
