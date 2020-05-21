@@ -1,6 +1,6 @@
 main: dev.itsu.bpx.core.Main
 name: BlockProtectX
-version: 1.9.2
+version: 1.10.0
 api: ["1.0.0"]
 author: itsu
 authors:
