@@ -22,7 +22,7 @@ class EventListener : Listener {
     fun onTap(event: PlayerInteractEvent) {
         if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) return
 
-        if (!DataManager.coQueue.containsKey(event.player.name)) {
+        if (!DataManager.coQueue.containsKey(event.player.name) && !DataManager.exceptLevels.contains(event.player.level.name) && !DataManager.protectedLevels.contains(event.player.level.name)) {
             BlockProtectXAPI.createLog(event.player, event.block, event.block, BlockLog.ActionType.TYPE_TAP)
             return
         } else {
@@ -34,6 +34,7 @@ class EventListener : Listener {
 
     @EventHandler
     fun onBreak(event: BlockBreakEvent) {
+        /*
         if (event.player.isOp || DataManager.exceptLevels.contains(event.block.level.name)) {
             BlockProtectXAPI.createLog(event.player, event.block, event.block, BlockLog.ActionType.TYPE_BREAK)
             return
@@ -43,7 +44,7 @@ class EventListener : Listener {
             BlockProtectXAPI.createLog(event.player, event.block, event.block, BlockLog.ActionType.TYPE_BREAK)
             event.setCancelled()
             return
-        }
+        }*/
 
         val data = BlockProtectXAPI.getLogs(event.block)
         if (!BlockProtectXAPI.contains(data, BlockLog.ActionType.TYPE_PLACE)) {
@@ -68,7 +69,9 @@ class EventListener : Listener {
     @EventHandler
     fun onPlace(event: BlockPlaceEvent) {
         if (!event.player.isOp && DataManager.protectedLevels.contains(event.block.level.name)) event.setCancelled()
-        BlockProtectXAPI.createLog(event.player, event.block, event.block, BlockLog.ActionType.TYPE_PLACE)
+        if (!DataManager.protectedLevels.contains(event.block.level.name) || !DataManager.exceptLevels.contains(event.block.level.name)) {
+            BlockProtectXAPI.createLog(event.player, event.block, event.block, BlockLog.ActionType.TYPE_PLACE)
+        }
     }
 
     @EventHandler
