@@ -58,7 +58,7 @@ class EventListener : Listener {
             if (it.type == BlockLog.ActionType.TYPE_PLACE && it.owner == event.player.name) placedByMe = true
         }
 
-        if (!placedByMe && player.type == PlayerData.EditType.TYPE_UNEDITABLE) {
+        if (!placedByMe && !event.player.isOp && player.type == PlayerData.EditType.TYPE_UNEDITABLE) {
             event.player.sendMessage("§aシステム§r>>このブロックは破壊できません。")
             event.setCancelled()
         }
