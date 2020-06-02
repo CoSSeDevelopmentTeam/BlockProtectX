@@ -9,12 +9,9 @@ import cn.nukkit.event.block.BlockPlaceEvent
 import cn.nukkit.event.player.PlayerInteractEvent
 import cn.nukkit.event.player.PlayerJoinEvent
 import cn.nukkit.event.player.PlayerQuitEvent
-import cn.nukkit.utils.TextFormat
 import dev.itsu.bpx.api.model.PlayerData
 import dev.itsu.bpx.command.CoCommand
-import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 class EventListener : Listener {
 
@@ -71,10 +68,16 @@ class EventListener : Listener {
 
     @EventHandler
     fun onPlace(event: BlockPlaceEvent) {
-        if (!event.player.isOp && DataManager.protectedLevels.contains(event.block.level.name)) event.setCancelled()
-        if (!DataManager.protectedLevels.contains(event.block.level.name) || !DataManager.exceptLevels.contains(event.block.level.name)) {
-            BlockProtectXAPI.createLog(event.player, event.block, event.block, BlockLog.ActionType.TYPE_PLACE)
+        if (DataManager.exceptLevels.contains(event.block.level.name)) return
+
+        if (!event.player.isOp && DataManager.protectedLevels.contains(event.block.level.name)) {
+            event.setCancelled()
+            return
+        } else if (event.player.isOp && DataManager.protectedLevels.contains(event.block.level.name)) {
+            return
         }
+
+        BlockProtectXAPI.createLog(event.player, event.block, event.block, BlockLog.ActionType.TYPE_PLACE)
     }
 
     @EventHandler
