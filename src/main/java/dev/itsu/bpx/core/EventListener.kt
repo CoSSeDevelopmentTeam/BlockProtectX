@@ -34,17 +34,20 @@ class EventListener : Listener {
 
     @EventHandler
     fun onBreak(event: BlockBreakEvent) {
-        /*
-        if (event.player.isOp || DataManager.exceptLevels.contains(event.block.level.name)) {
+        if (event.player.isOp) {
+            if (DataManager.exceptLevels.contains(event.block.level.name) || DataManager.protectedLevels.contains(event.block.level.name)) return
             BlockProtectXAPI.createLog(event.player, event.block, event.block, BlockLog.ActionType.TYPE_BREAK)
             return
         }
 
         if (DataManager.protectedLevels.contains(event.block.level.name)) {
-            BlockProtectXAPI.createLog(event.player, event.block, event.block, BlockLog.ActionType.TYPE_BREAK)
             event.setCancelled()
             return
-        }*/
+        }
+
+        if (DataManager.exceptLevels.contains(event.block.level.name)) {
+            return
+        }
 
         val data = BlockProtectXAPI.getLogs(event.block)
         if (!BlockProtectXAPI.contains(data, BlockLog.ActionType.TYPE_PLACE)) {
@@ -58,7 +61,7 @@ class EventListener : Listener {
             if (it.type == BlockLog.ActionType.TYPE_PLACE && it.owner == event.player.name) placedByMe = true
         }
 
-        if (!placedByMe && !event.player.isOp && player.type == PlayerData.EditType.TYPE_UNEDITABLE) {
+        if (!placedByMe && player.type == PlayerData.EditType.TYPE_UNEDITABLE) {
             event.player.sendMessage("§aシステム§r>>このブロックは破壊できません。")
             event.setCancelled()
         }
