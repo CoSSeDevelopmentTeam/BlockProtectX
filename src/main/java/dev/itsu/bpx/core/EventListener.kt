@@ -17,9 +17,10 @@ class EventListener : Listener {
 
     @EventHandler
     fun onTap(event: PlayerInteractEvent) {
+        if (DataManager.exceptLevels.contains(event.player.level.name) || DataManager.protectedLevels.contains(event.player.level.name)) return
         if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) return
 
-        if (!DataManager.coQueue.containsKey(event.player.name) && !DataManager.exceptLevels.contains(event.player.level.name) && !DataManager.protectedLevels.contains(event.player.level.name)) {
+        if (!DataManager.coQueue.containsKey(event.player.name)) {
             BlockProtectXAPI.createLog(event.player, event.block, event.block, BlockLog.ActionType.TYPE_TAP)
             return
         } else {
